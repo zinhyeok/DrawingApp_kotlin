@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 
 
@@ -34,6 +35,48 @@ class DrawingView(context: Context, attrs: AttributeSet) : View(context, attrs){
         mBrushSize = 20.toFloat()
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        mCanvasBitmap = Bitmap.createBitmap(w,h, Bitmap.Config.ARGB_8888)
+        canvas = Canvas(mCanvasBitmap!!)
+    }
+
+    //Change Canvas to Canvas?  if fails
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        canvas.drawBitmap(mCanvasBitmap!!, 0f,0f, mCanvasPaint)
+
+        if(!mDrawPath!!.isEmpty){
+            mDrawPaint!!.strokeWidth = mDrawPath!!.brushThickness
+            mDrawPaint!!.color = mDrawPath!!.color
+            canvas.drawPath(mDrawPath!!, mDrawPaint!!)
+        }
+
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        val tochX = event?.x
+        val tochY = event?.y
+
+        when(event?.action){
+            MotionEvent.ACTION_DOWN -> {
+                mDrawPath!!.color = color
+                mDrawPath!!.brushThickness = mBrushSize
+                mDrawPath!!.reset()
+                mDrawPath!!.moveTo(tochX?:0.toFloat(), tochY?:0.toFloat())
+            }
+            MotionEvent.ACTION_MOVE -> {
+                mDrawPath!!.lineTo(tochX?:0.toFloat(), tochY?:0.toFloat())
+            }
+            MotionEvent.ACTION_UP -> {
+                mDrawPath = CustomPath(color, mBrushSize)
+            }
+            else -> return false
+        }
+        invalidate()
+        return true
+        return super.onTouchEvent(event)
+    }
     internal inner class CustomPath(var color: Int, var brushThickness: Float): android.graphics.Path(){
 
     }
