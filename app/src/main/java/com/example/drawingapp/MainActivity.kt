@@ -59,9 +59,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         val ibGallery : ImageButton = findViewById(R.id.ib_gallery)
-            ibGallery.setOnClickListener{
-                requestStoragePermission()
-            }
+        ibGallery.setOnClickListener{
+            requestStoragePermission()
+        }
     }
 
     private fun showBrushSizeChooserDialog(){
@@ -102,6 +102,17 @@ class MainActivity : AppCompatActivity() {
             mImageButtonCurrentPaint = view
         }
     }
+    private fun requestStoragePermission(){
+        if(ActivityCompat.shouldShowRequestPermissionRationale(
+                this, android.Manifest.permission.READ_EXTERNAL_STORAGE)){
+            showRationalDialog("Drawing App", "This App " +
+                    "needs to Access your External storage for getting image")
+        }else{
+            requestPermission.launch(arrayOf(
+                android.Manifest.permission.READ_EXTERNAL_STORAGE
+            ))
+        }
+    }
 
     private fun showRationalDialog(
         title: String, message: String){
@@ -114,15 +125,5 @@ class MainActivity : AppCompatActivity() {
         builder.create().show()
     }
 
-    private fun requestStoragePermission(){
-        if(ActivityCompat.shouldShowRequestPermissionRationale(
-                this, android.Manifest.permission.READ_EXTERNAL_STORAGE)){
-            showRationalDialog("Drawing App", "Our App " +
-                    "needs to Access your External storage for getting image")
-        }else{
-            requestPermission.launch(arrayOf(
-                android.Manifest.permission.READ_EXTERNAL_STORAGE
-            ))
-        }
-    }
+
 }
